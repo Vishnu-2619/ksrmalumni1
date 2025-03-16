@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Register for KSRM Alumni Portal.">
+    <title>Register - KSRM Alumni Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="main-header">
+        <img src="{{ url_for('static', filename='images/ksrm-header.jpeg') }}" alt="KSRM College of Engineering Header" class="header-image">
+    </header>
+    <nav>
+        <ul class="nav-list">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('allumini') }}">Alumni</a></li>
+            <li><a href="{{ url_for('events') }}">Events</a></li>
+            <li><a href="{{ url_for('profiles') }}">Profiles</a></li>
+            <li><a href="{{ url_for('contact_us') }}">Contact Us</a></li>
+            {% if session.get('token') %}
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                {% if is_admin %}
+                    <li><a href="{{ url_for('admin') }}">Admin</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% else %}
+                <li><a href="{{ url_for('register') }}">Register</a></li>
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <main>
+        <section class="content container">
+            <h2>Register</h2>
+            <form id="register-form" novalidate enctype="multipart/form-data">
+                <div>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your name" required aria-required="true" aria-label="Full name">
+                </div>
+                <div>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required aria-required="true" aria-label="Email address">
+                </div>
+                <div>
+                    <label for="contact">Contact Number (with country code, e.g., +91):</label>
+                    <input type="tel" id="contact" name="contact" placeholder="Enter contact number" required aria-required="true" pattern="\+[0-9]{10,13}" aria-label="Contact number with country code">
+                </div>
+                <div>
+                    <label for="passed_out_year">Passed Out Year:</label>
+                    <input type="number" id="passed_out_year" name="passed_out_year" placeholder="Enter year" required aria-required="true" min="1900" max="{{ current_year }}" aria-label="Graduation year">
+                </div>
+                <div>
+                    <label for="photo">Upload Photo:</label>
+                    <input type="file" id="photo" name="photo" accept="image/png, image/jpeg" aria-label="Profile photo">
+                </div>
+                <div>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required aria-required="true" aria-label="Password">
+                </div>
+                <button type="submit" class="btn">Register</button>
+            </form>
+            <p>ALL FIELDS ARE REQUIRED.</p>
+            <p><em>Note: Your account requires admin approval before you can log in (except for admin@ksrmce.ac.in).</em></p>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <p class="{{ category }}">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </section>
+    </main>
+    <footer>
+        <p>© 2025 KSRM College of Engineering | Alumni Portal | <a href="{{ url_for('contact_us') }}">Contact</a></p>
+    </footer>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validate form fields
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const contact = document.getElementById('contact').value.trim();
+            const passedOutYear = document.getElementById('passed_out_year').value;
+            const password = document.getElementById('password').value;
+            const photo = document.getElementById('photo').files[0];
+
+            if (!name || !email || !contact || !passedOutYear || !password) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+
+            if (!/^\+[0-9]{10,13}$/.test(contact)) {
+                alert('Please enter a valid contact number with country code (e.g., +919876543210).');
+                return;
+            }
+
+            if (passedOutYear < 1900 || passedOutYear > {{ current_year }}) {
+                alert('Please enter a valid year between 1900 and {{ current_year }}.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('contact', contact);
+            formData.append('passed_out_year', passedOutYear);
+            formData.append('password', password);
+            if (photo) formData.append('photo', photo);
+
+            // Debug: Log form data to verify what's being sent
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest' // Indicate AJAX request
+                    }
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    window.location.href = '/login'; // Redirect after success
+                } else {
+                    alert('Registration failed: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error during registration:', error);
+                alert('Registration failed: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

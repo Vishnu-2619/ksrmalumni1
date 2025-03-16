@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login to KSRM Alumni Portal.">
+    <title>Login - KSRM Alumni Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="main-header">
+        <img src="{{ url_for('static', filename='images/ksrm-header.jpeg') }}" alt="KSRM College of Engineering Header" class="header-image">
+    </header>
+    <nav>
+        <ul class="nav-list">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('allumini') }}">Alumni</a></li>
+            <li><a href="{{ url_for('events') }}">Events</a></li>
+            <li><a href="{{ url_for('profiles') }}">Profiles</a></li>
+            <li><a href="{{ url_for('contact_us') }}">Contact Us</a></li>
+            {% if session.get('token') %}
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                {% if is_admin %}
+                    <li><a href="{{ url_for('admin') }}">Admin</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% else %}
+                <li><a href="{{ url_for('register') }}">Register</a></li>
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <main>
+        <section class="content container">
+            <h2>Login</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="{{ 'success' if 'successful' in message.lower() else 'error' }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <form method="POST">
+                <div>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
+        </section>
+    </main>
+    <footer>
+        <p>© 2025 KSRM College of Engineering | Alumni Portal | <a href="{{ url_for('contact_us') }}">Contact</a></p>
+    </footer>
+    <script>
+        // Small script to handle redirect if needed (optional)
+        window.onload = function() {
+            const messages = document.querySelectorAll('.success');
+            if (messages.length && !document.referrer.includes('/login')) {
+                setTimeout(() => window.location.href = '{{ url_for("dashboard") }}', 1000); // Redirect after 1 second if not a form submission
+            }
+        };
+    </script>
+</body>
+</html>

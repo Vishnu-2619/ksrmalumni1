@@ -1,0 +1,163 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    background-color: #003087;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+}
+
+header .banner {
+    max-height: 100px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 2em;
+}
+
+nav {
+    background-color: #003087;
+    padding: 10px 0;
+}
+
+.nav-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+.nav-list li {
+    display: inline;
+    margin: 0 15px;
+}
+
+.nav-list a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-list a:hover {
+    color: #ff0000;
+}
+
+main {
+    padding: 20px;
+}
+
+.content {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.hero {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #e9ecef;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #003087;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.btn:hover {
+    background-color: #ff0000;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form div {
+    margin-bottom: 15px;
+}
+
+form label {
+    margin-bottom: 5px;
+    display: block;
+}
+
+form input, form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+form input[type="file"] {
+    margin: 10px 0;
+}
+
+form textarea {
+    resize: vertical;
+}
+
+button.btn {
+    background-color: #003087;
+    border: none;
+    cursor: pointer;
+}
+
+button.btn:hover {
+    background-color: #ff0000;
+}
+
+.success {
+    color: green;
+    margin-top: 10px;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+.event-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.event-list li {
+    margin-bottom: 10px;
+}
+
+.event-list img {
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.back-btn {
+    display: inline-block;
+    margin-top: 20px;
+    color: #003087;
+    text-decoration: none;
+}
+
+.back-btn:hover {
+    color: #ff0000;
+}
+
+.service-list {
+    list-style-type: disc;
+    padding-left: 20px;
+}

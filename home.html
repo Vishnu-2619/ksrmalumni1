@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View and manage alumni profiles on KSRM Alumni Portal.">
+    <title>Profiles - KSRM Alumni Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+    <header class="main-header">
+        <img src="{{ url_for('static', filename='images/ksrm-header.jpeg') }}" alt="KSRM College of Engineering Header" class="header-image">
+    </header>
+    <nav>
+        <ul class="nav-list">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('allumini') }}">Alumni</a></li>
+            <li><a href="{{ url_for('events') }}">Events</a></li>
+            <li><a href="{{ url_for('profiles') }}">Profiles</a></li>
+            <li><a href="{{ url_for('contact_us') }}">Contact Us</a></li>
+            {% if session.get('token') %}
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                {% if is_admin %}
+                    <li><a href="{{ url_for('admin') }}">Admin</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% else %}
+                <li><a href="{{ url_for('register') }}">Register</a></li>
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <main>
+        <section class="hero container">
+            <div class="slider-container">
+                <div class="slider">
+                    <div class="slide">
+                        <img src="{{ url_for('static', filename='images/slide1.jpeg') }}" alt="Slide 1">
+                    </div>
+                    <div class="slide">
+                        <img src="{{ url_for('static', filename='images/slide2.jpeg') }}" alt="Slide 2">
+                    </div>
+                    <div class="slide">
+                        <img src="{{ url_for('static', filename='images/slide3.jpeg') }}" alt="Slide 3">
+                    </div>
+                </div>
+            </div>
+            <h2>Welcome to the KSRM Alumni Network</h2>
+            <p class="hero-text">Connect, share, and grow with your fellow alumni.</p>
+            <a href="{{ url_for('login') }}" class="btn btn-primary">Join Now</a>
+        </section>
+        <section class="content container">
+            <h2>About Us</h2>
+            <p>
+                The KSRM Alumni Portal helps graduates stay connected with their peers and the institution.
+                Established in 1980, KSRM College of Engineering is affiliated to JNTUA Anantapur, approved by AICTE,
+                and accredited by NBA and NAAC. Join our vibrant community to network, collaborate, and contribute
+                to the legacy of excellence at KSRM.
+            </p>
+            <a href="https://www.ksrmce.ac.in/alumniruf.php" class="btn btn-secondary" target="_blank">Learn More</a>
+        </section>
+        <section class="events-preview container">
+            <h2>Upcoming Events</h2>
+            <div class="event-cards">
+                <div class="event-card">
+                    <h3>Alumni Meet 2024</h3>
+                    <p>Join us for the annual alumni meet!</p>
+                    <p>Date: December 20, 2024</p>
+                    <a href="{{ url_for('login') }}" class="btn btn-event">View Details</a>
+                </div>
+                <div class="event-card">
+                    <h3>Webinar: Career Development</h3>
+                    <p>Learn tips for career advancement.</p>
+                    <p>Date: November 15, 2024</p>
+                    <a href="{{ url_for('login') }}" class="btn btn-event">View Details</a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>© 2025 KSRM College of Engineering | Alumni Portal | <a href="{{ url_for('contact_us') }}">Contact</a></p>
+    </footer>
+</body>
+</html>

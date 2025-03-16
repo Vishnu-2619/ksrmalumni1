@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View and manage alumni profiles on KSRM Alumni Portal.">
+    <title>Profiles - KSRM Alumni Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="main-header">
+        <img src="{{ url_for('static', filename='images/ksrm-header.jpeg') }}" alt="KSRM College of Engineering Header" class="header-image">
+    </header>
+    <nav>
+        <ul class="nav-list">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('allumini') }}">Alumni</a></li>
+            <li><a href="{{ url_for('events') }}">Events</a></li>
+            <li><a href="{{ url_for('profiles') }}">Profiles</a></li>
+            <li><a href="{{ url_for('contact_us') }}">Contact Us</a></li>
+            {% if session.get('token') %}
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                {% if is_admin %}
+                    <li><a href="{{ url_for('admin') }}">Admin</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% else %}
+                <li><a href="{{ url_for('register') }}">Register</a></li>
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <main>
+        <section class="content">
+            <h2>Alumni Network</h2>
+            <p>Join our alumni network to stay connected with your peers.</p>
+            <a href="{{ url_for('dashboard') }}" class="btn">Go to Dashboard</a>
+        </section>
+    </main>
+    <footer>
+        <p>© 2025 KSRM College of Engineering | Alumni Portal | <a href="{{ url_for('contact_us') }}">Contact</a></p>
+    </footer>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+</body>
+</html>

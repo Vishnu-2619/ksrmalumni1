@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin dashboard for managing KSRM Alumni Portal events and users.">
+    <title>Admin - KSRM Alumni Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Montserrat:wght@500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="main-header">
+        <img src="{{ url_for('static', filename='images/ksrm-header.jpeg') }}" alt="KSRM College of Engineering Header" class="header-image">
+    </header>
+    <nav>
+        <ul class="nav-list">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('allumini') }}">Alumni</a></li>
+            <li><a href="{{ url_for('events') }}">Events</a></li>
+            <li><a href="{{ url_for('profiles') }}">Profiles</a></li>
+            <li><a href="{{ url_for('contact_us') }}">Contact Us</a></li>
+            {% if session.get('token') %}
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                {% if is_admin %}
+                    <li><a href="{{ url_for('admin') }}">Admin</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% else %}
+                <li><a href="{{ url_for('register') }}">Register</a></li>
+                <li><a href="{{ url_for('login') }}">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    <main>
+        <section class="content container">
+            <h2>Welcome, {{ session.get('user_name', 'Admin User') }}!</h2>
+            <div class="event-section">
+                <h3>Manage Events</h3>
+                <form id="eventForm">
+                    <input type="hidden" id="eventId" name="event_id">
+                    <div>
+                        <label for="eventTitle">Event Title:</label>
+                        <input type="text" id="eventTitle" name="title" required>
+                    </div>
+                    <div>
+                        <label for="eventDate">Event Date (YYYY-MM-DD):</label>
+                        <input type="date" id="eventDate" name="date" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="submitButton">Add Event</button>
+                </form>
+
+                <h3>Upcoming Events</h3>
+                {% if events %}
+                    <ul class="event-list">
+                        {% for event in events %}
+                            <li>
+                                {{ event.title }} on {{ event.date }}
+                                <button class="btn btn-primary btn-small" onclick="editEvent('{{ event.id }}', '{{ event.title }}', '{{ event.date }}')">Edit</button>
+                                <button class="btn btn-danger btn-small" onclick="deleteEvent('{{ event.id }}')">Delete</button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No upcoming events.</p>
+                {% endif %}
+            </div>
+            <div class="user-section">
+                <h3>Pending User Approvals</h3>
+                {% if users %}
+                    <ul class="user-list">
+                        {% set has_pending = false %}
+                        {% for user in users %}
+                            {% if not user.approved and user.email != 'admin@ksrmce.ac.in' %}
+                                {% set has_pending = true %}
+                                <li>
+                                    {{ user.name }} ({{ user.email }}) - Passed Out: {{ user.passed_out_year }}
+                                    <button class="btn btn-primary btn-small" onclick="approveUser('{{ user.id }}')">Approve</button>
+                                    <button class="btn btn-danger btn-small" onclick="rejectUser('{{ user.id }}')">Reject</button>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if not has_pending %}
+                            <p>No pending approvals.</p>
+                        {% endif %}
+                    </ul>
+                {% else %}
+                    <p>No users to approve.</p>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>© 2025 KSRM College of Engineering | Alumni Portal | <a href="{{ url_for('contact_us') }}">Contact</a></p>
+    </footer>
+    <script src="{{ url_for('static', filename='scripts.js') }}"></script>
+    <script>
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const eventId = document.getElementById('eventId').value;
+            const title = document.getElementById('eventTitle').value;
+            const date = document.getElementById('eventDate').value;
+            const action = eventId ? 'edit' : 'add';
+            fetch('/admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: action, event_id: eventId, title: title, date: date })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === 'Success') {
+                    alert('Event ' + (action === 'add' ? 'added' : 'updated') + ' successfully!');
+                    location.reload();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => alert('Error: ' + error));
+        });
+
+        function editEvent(id, title, date) {
+            document.getElementById('eventId').value = id;
+            document.getElementById('eventTitle').value = title;
+            document.getElementById('eventDate').value = date;
+            document.getElementById('submitButton').textContent = 'Update Event';
+        }
+
+        function deleteEvent(id) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                fetch('/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'delete', event_id: id })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'Success') {
+                        alert('Event deleted successfully!');
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => alert('Error: ' + error));
+            }
+        }
+
+        function approveUser(userId) {
+            if (confirm('Are you sure you want to approve this user?')) {
+                fetch('/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'approve', user_id: userId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'Success') {
+                        alert('User approved successfully!');
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => alert('Error: ' + error));
+            }
+        }
+
+        function rejectUser(userId) {
+            if (confirm('Are you sure you want to reject this user? This action cannot be undone.')) {
+                fetch('/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'reject', user_id: userId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'Success') {
+                        alert('User rejected successfully!');
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => alert('Error: ' + error));
+            }
+        }
+
+        fetch('/current_user_session')
+            .then(response => response.json())
+            .then(data => {
+                if (data.name) {
+                    document.querySelector('h2').textContent = `Welcome, ${data.name}!`;
+                }
+            })
+            .catch(error => console.error('Error fetching user session:', error));
+    </script>
+</body>
+</html>
